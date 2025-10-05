@@ -1,0 +1,6 @@
+<h1>Register</h1>
+
+@if(serverError()) {
+    <p>{{serverError()}}</p>
+}
+<hb-register-form (submitForm)="register($event)"/>

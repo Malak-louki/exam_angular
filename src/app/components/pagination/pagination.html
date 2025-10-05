@@ -1,0 +1,16 @@
+@if(!paginated().first){
+    <a routerLink="./" [queryParams]="{page: page()-1}" queryParamsHandling="merge">Previous</a>
+}
+@for (item of [].constructor(paginated().totalPages); track $index) {
+    @let currPage = $index+1;
+    <a routerLink="./" [queryParams]="{page: currPage}" queryParamsHandling="merge" 
+    [class.active-link]="page() == currPage">{{currPage}}</a>
+}
+@if(!paginated().last) {
+
+    <a routerLink="./" [queryParams]="{page: page()+1}" queryParamsHandling="merge">Next</a>
+}
+
+        <!--alternativement, si on veut garder le texte mais ne pas permettre la navigation 
+            <a [routerLink]="productPage.value().last ? null:'/shop'" [queryParams]="{page: page()+1}" queryParamsHandling="merge">Next</a>
+        -->

@@ -1,0 +1,12 @@
+<h1>Feed</h1>
+
+@if(postPage.isLoading()) {
+    <p>Loading products...</p>
+} @else {
+    @if(postPage.hasValue() && postPage.value().totalElements > 0) {
+        <hb-post-list [posts]="postPage.value().content" />
+        <hb-pagination [page]="page()" [paginated]="postPage.value()" />
+    } @else {
+        <p>There is no products</p>
+    }
+}

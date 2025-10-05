@@ -1,0 +1,5 @@
+<section>
+    @for(item of posts(); track item.id) {
+        <hb-post-card [post]="item" />
+    }
+</section>

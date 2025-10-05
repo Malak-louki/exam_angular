@@ -1,0 +1,20 @@
+
+<form [formGroup]="form" (ngSubmit)="handleSubmit()">
+    <label>Email
+        <input type="email" formControlName="email">
+    </label>
+    <label>Name
+        <input type="text" formControlName="displayName">
+    </label>
+
+    <label>Password
+        <input type="password" formControlName="password">
+    </label>
+    
+    <label>Repeat Password
+        <input type="password" formControlName="repeatPassword">
+    </label>
+    <button>Register</button>
+</form>
+
+{{form.valid}}

@@ -1,14 +1,17 @@
 <div class="container mx-auto px-4 py-8 max-w-4xl">
   @if (isLoading()) {
     <div class="flex justify-center items-center min-h-screen">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div class="relative">
+        <div class="h-12 w-12 rounded-full border-2 border-[#cdb4db]/40"></div>
+        <div class="absolute inset-0 h-12 w-12 rounded-full border-2 border-t-[#5e548e] animate-spin"></div>
+      </div>
     </div>
   } @else if (picture()) {
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="bg-white/90 rounded-2xl shadow-lg overflow-hidden border border-[#b8c0ff]/30">
       <!-- Image -->
-      <div class="relative">
-        <img 
-          [src]="serverUrl + '/uploads/' + picture()!.image" 
+      <div class="relative bg-[#f8f7ff]">
+        <img
+          [src]="serverUrl + '/uploads/' + picture()!.image"
           [alt]="picture()!.description || 'Image'"
           class="w-full h-auto object-cover"
         />
@@ -18,45 +21,48 @@
       <div class="p-6">
         <!-- User Info -->
         <div class="flex items-center mb-4">
-          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+          <div
+            class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mr-3
+                   bg-gradient-to-br from-[#cdb4db] via-[#b8c0ff] to-[#5e548e] shadow"
+          >
             {{ picture()!.author.displayName.charAt(0).toUpperCase() }}
           </div>
           <div>
-            <h3 class="font-semibold">{{ picture()!.author.displayName }}</h3>
-            <p class="text-sm text-gray-500">{{ picture()!.createdAt | date:'medium' }}</p>
+            <h3 class="font-semibold text-[#5e548e]">{{ picture()!.author.displayName }}</h3>
+            <p class="text-sm text-[#6d597a]">{{ picture()!.createdAt | date:'medium' }}</p>
           </div>
         </div>
 
         <!-- Title -->
-        <h2 class="text-2xl font-bold mb-2">{{ picture()!.title }}</h2>
+        <h2 class="text-2xl font-bold mb-2 text-[#3c096c]">{{ picture()!.title }}</h2>
 
         <!-- Description -->
-        <p class="text-gray-700 mb-4">{{ picture()!.description }}</p>
+        <p class="text-[#6d597a] mb-4">{{ picture()!.description }}</p>
 
         <!-- Like Button -->
         <div class="flex items-center gap-4 mb-6">
           @if (currentUser()) {
-            <button 
+            <button
               (click)="toggleLike()"
-              [class.text-red-600]="isLiked()"
-              [class.text-gray-600]="!isLiked()"
+              [class.text-pink-600]="isLiked()"
+              [class.text-[#6d597a]]="!isLiked()"
               class="flex items-center gap-2 hover:scale-110 transition-transform"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" 
+              <svg xmlns="http://www.w3.org/2000/svg"
                    [class.fill-current]="isLiked()"
-                   class="h-6 w-6" 
-                   fill="none" 
-                   viewBox="0 0 24 24" 
+                   class="h-6 w-6"
+                   fill="none"
+                   viewBox="0 0 24 24"
                    stroke="currentColor">
-                <path stroke-linecap="round" 
-                      stroke-linejoin="round" 
-                      stroke-width="2" 
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
                       d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               <span class="font-semibold">{{ likesCount() }}</span>
             </button>
           } @else {
-            <div class="flex items-center gap-2 text-gray-600">
+            <div class="flex items-center gap-2 text-[#6d597a]">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
@@ -66,8 +72,10 @@
         </div>
 
         <!-- Comments Section -->
-        <div class="border-t pt-6">
-          <h3 class="text-xl font-bold mb-4">Commentaires ({{ comments().length }})</h3>
+        <div class="border-t border-[#b8c0ff]/30 pt-6">
+          <h3 class="text-xl font-bold mb-4 text-[#5e548e]">
+            Commentaires ({{ comments().length }})
+          </h3>
 
           <!-- Add Comment Form -->
           @if (currentUser()) {
@@ -75,21 +83,25 @@
               <textarea
                 [(ngModel)]="commentContent"
                 placeholder="Ajouter un commentaire..."
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                class="w-full p-3 border border-[#cdb4db]/60 rounded-lg focus:ring-2 focus:ring-[#b8c0ff] focus:border-transparent resize-none bg-white/80"
                 rows="3"
               ></textarea>
               <button
                 (click)="submitComment()"
                 [disabled]="!commentContent().trim() || isSubmitting()"
-                class="mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                class="mt-2 px-6 py-2 rounded-lg text-white font-medium
+                       bg-[#cdb4db] hover:bg-[#b8c0ff]
+                       disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {{ isSubmitting() ? 'Envoi...' : 'Publier' }}
               </button>
             </div>
           } @else {
-            <div class="mb-6 p-4 bg-gray-100 rounded-lg text-center">
-              <p class="text-gray-600">
-                <a routerLink="/login" class="text-blue-600 hover:underline">Connectez-vous</a> 
+            <div class="mb-6 p-4 rounded-lg text-center bg-[#f8f7ff] border border-[#b8c0ff]/30">
+              <p class="text-[#6d597a]">
+                <a routerLink="/login" class="text-[#5e548e] underline decoration-[#cdb4db]/70 underline-offset-4 hover:text-[#3c096c]">
+                  Connectez-vous
+                </a>
                 pour commenter
               </p>
             </div>
@@ -98,20 +110,23 @@
           <!-- Comments List -->
           <div class="space-y-4">
             @for (comment of comments(); track comment.id) {
-              <div class="flex gap-3 p-4 bg-gray-50 rounded-lg">
-                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+              <div class="flex gap-3 p-4 bg-white/80 border border-[#b8c0ff]/30 rounded-xl">
+                <div
+                  class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0
+                         bg-gradient-to-br from-[#cdb4db] via-[#b8c0ff] to-[#5e548e]"
+                >
                   {{ comment.author.displayName.charAt(0).toUpperCase() }}
                 </div>
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-1">
-                    <span class="font-semibold">{{ comment.author.displayName }}</span>
-                    <span class="text-sm text-gray-500">{{ comment.createdAt | date:'short' }}</span>
+                    <span class="font-semibold text-[#3c096c]">{{ comment.author.displayName }}</span>
+                    <span class="text-sm text-[#6d597a]">{{ comment.createdAt | date:'short' }}</span>
                   </div>
-                  <p class="text-gray-700">{{ comment.content }}</p>
+                  <p class="text-[#6d597a]">{{ comment.content }}</p>
                 </div>
               </div>
             } @empty {
-              <p class="text-gray-500 text-center py-4">Aucun commentaire pour le moment</p>
+              <p class="text-[#6d597a] text-center py-4">Aucun commentaire pour le moment</p>
             }
           </div>
         </div>
@@ -119,7 +134,7 @@
     </div>
 
     <div class="mt-6">
-      <a routerLink="/feed" class="text-blue-600 hover:underline flex items-center gap-2">
+      <a routerLink="/feed" class="inline-flex items-center gap-2 text-[#5e548e] hover:text-[#3c096c] underline decoration-[#cdb4db]/60 underline-offset-4 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
         </svg>
@@ -127,9 +142,9 @@
       </a>
     </div>
   } @else {
-    <div class="text-center py-12">
-      <h2 class="text-2xl font-bold text-gray-700 mb-4">Image non trouvée</h2>
-      <a routerLink="/feed" class="text-blue-600 hover:underline">Retour au feed</a>
+    <div class="text-center py-12 bg-white/80 border border-[#b8c0ff]/30 rounded-2xl">
+      <h2 class="text-2xl font-bold text-[#5e548e] mb-4">Image non trouvée</h2>
+      <a routerLink="/feed" class="text-[#5e548e] hover:text-[#3c096c] underline decoration-[#cdb4db]/60 underline-offset-4">Retour au feed</a>
     </div>
   }
 </div>

@@ -1,70 +1,53 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
-import { Picture } from '../../../shared/models/entities';
-import { CommonModule } from '@angular/common';
-import { AuthApi } from '../../api/auth/auth-api';
-import { PictureApi } from '../../api/picture/picture-api';
-import { environment } from '../../../environments/environment.development';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { environment } from '../../../environments/environment.development';
+import { Picture } from '../../../shared/models/entities';
 
 @Component({
   selector: 'hb-post-card',
-  imports: [CommonModule, RouterLink],
   templateUrl: './post-card.html',
-  styleUrl: './post-card.scss',
+  styleUrls: ['./post-card.scss'],
+  standalone: true,
+  imports: [RouterLink, DatePipe],
 })
-export class PostCard implements OnInit {
-  private readonly authApi = inject(AuthApi);
-  private readonly pictureApi = inject(PictureApi);
+export class PostCard {
+  post = input.required<Picture>();
+  serverUrl = environment.serverUrl;
 
-  readonly post = input.required<Picture>();
-  readonly isLiked = signal<boolean>(false);
-  readonly likesCount = signal<number>(0);
-  readonly currentUser = this.authApi.user;
-  readonly serverUrl = environment.serverUrl;
+  /** ✅ valeurs directes (pas des fonctions) */
+  currentUser = input<any>(null);                 // User | null
+  isLiked     = input<boolean>(false);            // like state
+  likesCount  = input<number>(0);                 // nombre de likes
+  toggleLike  = input<(event: Event) => void>(() => {}); // handler fourni par le parent
 
-  ngOnInit() {
-    const post = this.post();
-    const user = this.currentUser();
-
-    // Get likes count from the likes array
-    this.likesCount.set(post.likes?.length || 0);
-
-    // Check if the current user has liked the post
-    if (user && post.likes) {
-      const liked = post.likes.some((likeUser) => likeUser.id === user.id);
-      this.isLiked.set(liked);
-    }
+  private isAbsolute(url?: string | null): boolean {
+    return !!url && /^https?:\/\//i.test(url);
   }
 
-  onImageError(event: Event): void {
-    console.error('Image failed to load for post:', this.post());
-    const target = event.target as HTMLImageElement;
-    target.src = 'https://via.placeholder.com/400x400?text=Image+Not+Found';
-  }
+  thumbnailSrc = computed(() => {
+    const p = this.post();
+    const thumb = (p as any).thumbnaillink || (p as any).thumbnailLink;
+    const full  = (p as any).imagelink || (p as any).imageLink;
+    const base  = p.image;
+    const candidate = thumb || full || base;
 
-  toggleLike(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
+    if (this.isAbsolute(candidate)) return candidate!;
+    if (candidate) return `${this.serverUrl}/uploads/${candidate}`;
+    return 'assets/image-fallback.svg';
+  });
 
-    if (!this.currentUser()) {
-      return;
-    }
+  createdAtDate = computed(() => {
+    const raw = this.post().createdAt;
+    if (!raw) return null;
+    const iso = raw.includes('T') ? raw : raw.replace(' ', 'T');
+    const d = new Date(iso);
+    return isNaN(d.getTime()) ? null : d;
+  });
 
-    const post = this.post();
-
-    // Le backend fait un toggle automatique avec PATCH
-    this.pictureApi.toggleLike(post.id).subscribe({
-      next: (updatedPicture) => {
-        // Mettre à jour l'état local avec la réponse du serveur
-        const user = this.currentUser();
-        if (user) {
-          const nowLiked =
-            updatedPicture.likes?.some((likeUser) => likeUser.id === user.id) || false;
-          this.isLiked.set(nowLiked);
-          this.likesCount.set(updatedPicture.likes?.length || 0);
-        }
-      },
-      error: (err) => console.error('Error toggling like:', err),
-    });
+  onImageError(evt: Event) {
+    const img = evt.target as HTMLImageElement;
+    (img as any).onerror = null;
+    img.src = 'assets/image-fallback.svg';
   }
 }

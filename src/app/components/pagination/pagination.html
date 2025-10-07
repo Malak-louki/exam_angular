@@ -10,7 +10,3 @@
 
     <a routerLink="./" [queryParams]="{page: page()+1}" queryParamsHandling="merge">Next</a>
 }
-
-        <!--alternativement, si on veut garder le texte mais ne pas permettre la navigation 
-            <a [routerLink]="productPage.value().last ? null:'/shop'" [queryParams]="{page: page()+1}" queryParamsHandling="merge">Next</a>
-        -->

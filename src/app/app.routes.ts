@@ -13,7 +13,6 @@ export const routes: Routes = [
     { path: 'register', component: RegisterView },
     { path: 'login', component: LoginView },
     { path: 'feed', component: Feed },
-    { path: 'picture/:id', component: PictureDetailView },
-    { path: 'create', component: CreatePostView },
+    { path: 'picture/:id', component: PictureDetailView },    { path: 'create', component: CreatePostView },
     { path: 'user/:userId/pictures', component: UserPicturesView }
 ];

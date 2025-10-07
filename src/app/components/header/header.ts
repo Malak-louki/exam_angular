@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Navbar } from "../navbar/navbar";
 
 @Component({
   selector: 'hb-header',
-  imports: [RouterLink, RouterLinkActive, CommonModule ],
+  imports: [RouterLink, RouterLinkActive, CommonModule, Navbar],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })

@@ -1,36 +1,79 @@
-<div
-    class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 overflow-hidden relative">
-    <!-- Image avec le coeur en overlay -->
-    <div class="relative">
-        <img class="w-full h-48 object-cover" [src]="post().image" alt="image" />
+<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+  <!-- Debug: Afficher les données -->
+  <div class="p-2 bg-yellow-100 text-xs">
+    <p><strong>ID:</strong> {{ post().id }}</p>
+    <p><strong>Image:</strong> {{ post().image }}</p>
+    <p><strong>Author:</strong> {{ post().author.displayName }}</p>
+    <p><strong>URL:</strong> {{ serverUrl }}/uploads/thumbnail-{{ post().image }}</p>
+  </div>
 
-        <!-- Bouton coeur -->
-        <button type="button" (click)="toggleLike()"
-            class="absolute top-2 right-2 p-2 rounded-full bg-white/70 hover:bg-white shadow-md transition">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                [ngClass]="liked ? 'text-red-600' : 'text-gray-400'" class="w-6 h-6 transition-colors duration-200">
-                <path fill-rule="evenodd" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-               2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09 
-               A6.36 6.36 0 0 1 16.5 3C19.58 3 22 5.42 22 8.5
-               c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" clip-rule="evenodd" />
-            </svg>
-        </button>
+  <a [routerLink]="['/picture', post().id]">
+    <!-- Image -->
+    <div class="relative aspect-square bg-gray-200">
+      <img
+        [src]="serverUrl + '/uploads/thumbnail-' + post().image"
+        [alt]="post().description || 'Image'"
+        class="w-full h-full object-cover"
+        (error)="onImageError($event)"
+      />
     </div>
 
-    <!-- Contenu -->
-    <div class="p-5">
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {{ post().title }}
-        </h5>
-        <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white 
-                bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none 
-                focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-            Read more
-            <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 14 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M1 5h12m0 0L9 1m4 4L9 9" />
+    <!-- Content -->
+    <div class="p-4">
+      <!-- User Info -->
+      <div class="flex items-center mb-3">
+        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-2">
+          {{ post().author.displayName.charAt(0).toUpperCase() }}
+        </div>
+        <div>
+          <p class="font-semibold text-sm">{{ post().author.displayName }}</p>
+          <p class="text-xs text-gray-500">{{ post().createdAt | date:'short' }}</p>
+        </div>
+      </div>
+
+      <!-- Title -->
+      @if (post().title) {
+        <h3 class="font-bold text-base mb-2">{{ post().title }}</h3>
+      }
+
+      <!-- Description -->
+      @if (post().description) {
+        <p class="text-gray-700 text-sm mb-3 line-clamp-2">
+          {{ post().description }}
+        </p>
+      }
+
+      <!-- Like Button -->
+      <div class="flex items-center gap-2">
+        @if (currentUser()) {
+          <button
+            (click)="toggleLike($event)"
+            [class.text-red-600]="isLiked()"
+            [class.text-gray-600]="!isLiked()"
+            class="flex items-center gap-1 hover:scale-110 transition-transform"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 [class.fill-current]="isLiked()"
+                 class="h-5 w-5"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor">
+              <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
-        </a>
+            <span class="text-sm font-semibold">{{ likesCount() }}</span>
+          </button>
+        } @else {
+          <div class="flex items-center gap-1 text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <span class="text-sm font-semibold">{{ likesCount() }}</span>
+          </div>
+        }
+      </div>
     </div>
+  </a>
 </div>
